@@ -8,6 +8,9 @@ use app\models\Product;
 use app\models\Sale;
 use app\models\Contract;
 use app\models\Organization;
+use app\models\SearchForm;
+use Yii;
+
 
 class ReportsController extends Controller
 {
@@ -20,82 +23,86 @@ class ReportsController extends Controller
 
     public function actionPricePens()
     {
-        // Отчёт 1
-        $query = Product::find()
-            ->where(['like', 'description', 'черная'])
-            ->andWhere(['like', 'description', 'гелевая']);
+        $model = new SearchForm();
+        $query = Product::find();
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'pagination' => ['pageSize' => 20],
-        ]);
+        if ($model->load(Yii::$app->request->get()) && $model->validate()) {
+            $query->andFilterWhere(['like', 'description', $model->description]);
+        }
 
-        return $this->render('price-pens', [
-            'dataProvider' => $dataProvider,
-        ]);
+        $dataProvider = new ActiveDataProvider(['query' => $query]);
+
+        return $this->render('price-pens', compact('dataProvider', 'model'));
     }
+
 
     public function actionOrdersSeptember()
     {
-        // Отчёт 2
-        $query = Sale::find()
-            ->joinWith('contract')
-            ->where(['MONTH(contracts.date_created)' => 9]);
+        $model = new SearchForm();
+        $query = Sale::find()->joinWith('contract');
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'pagination' => ['pageSize' => 20],
-        ]);
+        if ($model->load(Yii::$app->request->get()) && $model->validate()) {
+            $month = $model->month ?: 9; 
+            $query->andWhere(['MONTH(contracts.date_created)' => $month]);
+        }
 
-        return $this->render('orders-september', [
-            'dataProvider' => $dataProvider,
-        ]);
+        $dataProvider = new ActiveDataProvider(['query' => $query]);
+        return $this->render('orders-september', compact('dataProvider', 'model'));
     }
+
 
     public function actionOrdersByOrganization()
     {
-        // Отчёт 3
-        $query = Sale::find()
-            ->joinWith(['contract.organization', 'product'])
-            ->where(['organizations.name' => 'ИП Малиновский А.С.']);
+        $model = new SearchForm();
+        $query = Sale::find()->joinWith(['contract.organization', 'product']);
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'pagination' => ['pageSize' => 20],
-        ]);
+        if ($model->load(Yii::$app->request->get()) && $model->validate()) {
+            $query->andFilterWhere(['like', 'organizations.name', $model->organization_name]);
+        }
 
-        return $this->render('orders-by-organization', [
-            'dataProvider' => $dataProvider,
-        ]);
+        $dataProvider = new ActiveDataProvider(['query' => $query]);
+        return $this->render('orders-by-organization', compact('dataProvider', 'model'));
     }
 
-    public function actionOrdersCount()
+
+ public function actionOrdersCount()
+{
+    $model = new \app\models\SearchForm();
+    $model->load(Yii::$app->request->get());
+    $minOrders = $model->min_orders ?: 0;
+
+    $query = \app\models\Organization::find()
+        ->alias('o')
+        ->select(['o.*', 'COUNT(c.id) AS orders_count'])
+        ->joinWith('contracts c', false)
+        ->groupBy('o.id')
+        ->having(['>=', 'COUNT(c.id)', $minOrders])
+        ->asArray();
+
+    $dataProvider = new \yii\data\ActiveDataProvider([
+        'query' => $query,
+        'pagination' => ['pageSize' => 20],
+    ]);
+
+    return $this->render('orders-count', [
+        'dataProvider' => $dataProvider,
+        'model' => $model,
+    ]);
+}
+
+
+
+
+  public function actionOrganizationsWithContracts()
     {
-        // Отчёт 4
-      $query = Organization::find()
-            ->select(['organizations.*', 'COUNT(contracts.id) AS orders_count'])
-            ->joinWith('contracts')
-            ->groupBy('organizations.id')
-            ->asArray(); 
+        $minContracts = Yii::$app->request->get('SearchForm')['min_contracts'] ?? 2;
 
-        $dataProvider = new \yii\data\ArrayDataProvider([
-            'allModels' => $query->all(),
-            'pagination' => ['pageSize' => 20],
-        ]);
-
-        return $this->render('orders-count', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-   public function actionOrganizationsWithContracts()
-    {
-        // Отчёт 5
         $query = Organization::find()
-            ->select(['organizations.*', 'COUNT(contracts.id) AS contracts_count'])
-            ->joinWith('contracts')
-            ->groupBy('organizations.id')
-            ->having('COUNT(contracts.id) > 2')
+            ->alias('o')
+            ->select(['o.*', 'COUNT(c.id) AS contracts_count'])
+            ->joinWith('contracts c', false)
+            ->groupBy('o.id')
+            ->having(['>=', 'COUNT(c.id)', $minContracts])
             ->asArray();
 
         $dataProvider = new ActiveDataProvider([
@@ -103,9 +110,15 @@ class ReportsController extends Controller
             'pagination' => ['pageSize' => 20],
         ]);
 
+        $model = new \app\models\SearchForm();
+        $model->min_contracts = $minContracts;
+
         return $this->render('organizations-with-contracts', [
             'dataProvider' => $dataProvider,
+            'model' => $model,
         ]);
     }
+
+
 
 }

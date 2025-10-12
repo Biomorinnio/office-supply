@@ -1,37 +1,39 @@
 <?php
+use yii\widgets\ActiveForm;
+use yii\helpers\Html;
 use yii\grid\GridView;
 
-$this->title = 'Организации с более чем 2 договорами';
-?>
+/** @var yii\data\ActiveDataProvider $dataProvider */
+/** @var app\models\SearchForm $model */
 
-<div class="report-container">
-    <h1><?= $this->title ?></h1>
-    <p>Список организаций, у которых более двух договоров.</p>
+$this->title = 'Организации с более чем N договорами';
+?>
+<div class="report-container container mt-4">
+    <h1><?= Html::encode($this->title) ?></h1>
+    <p>Укажите минимальное количество договоров для фильтрации.</p>
+
+    <?php $form = ActiveForm::begin(['method' => 'get']); ?>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <?= $form->field($model, 'min_contracts')->input('number', ['min' => 1, 'placeholder' => 'Например, 2'])->label('Минимум договоров') ?>
+            </div>
+            <div class="col-md-2 d-flex justify-content-end align-items-end">
+                <?= Html::submitButton('Показать', ['class' => 'btn btn-primary w-100']) ?>
+            </div>
+        </div>
+    <?php ActiveForm::end(); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'tableOptions' => ['class' => 'table table-striped table-bordered'],
+        'tableOptions' => ['class' => 'table table-bordered table-striped'],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            [
-                'label' => 'Название организации',
-                'attribute' => 'name',
-                'format' => 'text',
-            ],
-            [
-                'label' => 'Адрес',
-                'attribute' => 'address',
-                'format' => 'text',
-            ],
-            [
-                'label' => 'Телефон',
-                'attribute' => 'phone',
-                'format' => 'text',
-            ],
+            ['attribute' => 'name', 'label' => 'Название организации'],
+            ['attribute' => 'address', 'label' => 'Адрес'],
+            ['attribute' => 'phone', 'label' => 'Телефон'],
             [
                 'label' => 'Количество договоров',
-               'value' => fn($model) => $model['contracts_count'] ?? 0,
+                'value' => fn($model) => $model['contracts_count'] ?? 0,
             ],
         ],
     ]) ?>
