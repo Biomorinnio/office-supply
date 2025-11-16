@@ -73,6 +73,9 @@ if (YII_ENV_DEV) {
         'class' => 'yii\gii\Module',
        'allowedIPs' => ['127.0.0.1', '::1', '0.0.0.0/0'],
     ];
+    $config['modules']['admin'] = [
+        'class' => 'app\modules\admin\Module',
+    ];
 }
 
 return $config;

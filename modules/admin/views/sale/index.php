@@ -1,24 +1,24 @@
 <?php
 
-use app\models\Contract;
+use app\models\Sale;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 
 /** @var yii\web\View $this */
-/** @var app\models\ContractSearch $searchModel */
+/** @var app\models\SaleSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Contracts';
+$this->title = 'Sales';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="contract-index">
+<div class="sale-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Contract', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Sale', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -30,20 +30,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'organization_id',
-            'date_created',
-            'date_executed',
-
-            [
-                'attribute' => 'organization_id',
-                'label' => 'Организация',
-                'value' => fn($model) => $model->organization->name ?? '-',
-                'filter' => \yii\helpers\ArrayHelper::map(\app\models\Organization::find()->all(), 'id', 'name'),
-            ],
-
+            'contract_id',
+            'product_id',
+            'quantity',
             [
                 'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Contract $model, $key, $index, $column) {
+                'urlCreator' => function ($action, Sale $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }
             ],

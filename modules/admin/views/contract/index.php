@@ -33,14 +33,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'organization_id',
             'date_created',
             'date_executed',
-
-            [
-                'attribute' => 'organization_id',
-                'label' => 'Организация',
-                'value' => fn($model) => $model->organization->name ?? '-',
-                'filter' => \yii\helpers\ArrayHelper::map(\app\models\Organization::find()->all(), 'id', 'name'),
-            ],
-
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Contract $model, $key, $index, $column) {

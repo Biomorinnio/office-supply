@@ -23,24 +23,35 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+   <?= GridView::widget([
+    'dataProvider' => $dataProvider,
+    'filterModel' => $searchModel,
+    'columns' => [
+        ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'title',
-            'description:ntext',
-            'price',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Product $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
+        'id',
+        'title',
+        'description:ntext',
+        'price',
+
+        [
+            'attribute' => 'organization_id',
+            'label' => 'Организация',         
+            'value' => function($model) {
+                return $model->organization->name ?? '-';
+            },
+            'filter' => \yii\helpers\ArrayHelper::map(\app\models\Organization::find()->all(), 'id', 'name'),
         ],
-    ]); ?>
+
+        [
+            'class' => ActionColumn::className(),
+            'urlCreator' => function ($action, Product $model, $key, $index, $column) {
+                return Url::toRoute([$action, 'id' => $model->id]);
+            }
+        ],
+    ],
+]); ?>
+
 
 
 </div>

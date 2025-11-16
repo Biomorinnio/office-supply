@@ -33,6 +33,20 @@ $this->params['breadcrumbs'][] = $this->title;
             'contract_id',
             'product_id',
             'quantity',
+
+            [
+                'attribute' => 'contract_id',
+                'label' => 'Договор',
+                'value' => fn($model) => $model->contract->id ?? '-',
+                'filter' => \yii\helpers\ArrayHelper::map(\app\models\Contract::find()->all(), 'id', 'id'),
+            ],
+            [
+                'attribute' => 'product_id',
+                'label' => 'Продукт',
+                'value' => fn($model) => $model->product->title ?? '-',
+                'filter' => \yii\helpers\ArrayHelper::map(\app\models\Product::find()->all(), 'id', 'title'),
+            ],
+
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Sale $model, $key, $index, $column) {

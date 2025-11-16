@@ -42,9 +42,9 @@ class Contract extends ActiveRecord
         ];
     }
 
-    public function getOrganization()
+   public function getOrganization()
     {
-        return $this->hasOne(Organization::class, ['id' => 'organization_id']);
+        return $this->hasOne(\app\models\Organization::class, ['id' => 'organization_id']);
     }
 
     public function getSales()
