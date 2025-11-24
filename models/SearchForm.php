@@ -6,10 +6,10 @@ use yii\base\Model;
 
 class SearchForm extends Model
 {
-    public $description;      
-    public $month;             
-    public $organization_name; 
-    public $min_contracts;     
+    public $description;
+    public $month;
+    public $organization_name;
+    public $min_contracts;
     public $min_orders;
 
     public function rules()
@@ -17,10 +17,12 @@ class SearchForm extends Model
         return [
             [['description', 'organization_name'], 'trim'],
             [['description', 'organization_name'], 'string', 'max' => 100],
-            [['month', 'min_contracts'], 'integer', 'min' => 1],
-            ['month', 'integer', 'max' => 12],
-            [['month', 'min_contracts'], 'default', 'value' => null],
-            [['min_orders', 'min_contracts'], 'integer', 'min' => 0],
+
+            ['month', 'integer', 'min' => 1, 'max' => 12],
+            [['month'], 'default', 'value' => null],
+
+            ['min_contracts', 'integer', 'min' => 1],
+            ['min_orders', 'integer', 'min' => 0],
         ];
     }
 
@@ -31,6 +33,7 @@ class SearchForm extends Model
             'month' => 'Месяц (1–12)',
             'organization_name' => 'Название организации',
             'min_contracts' => 'Минимальное количество договоров',
+            'min_orders' => 'Минимум заказов',
         ];
     }
 }

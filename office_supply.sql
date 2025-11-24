@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Сен 28 2025 г., 17:55
+-- Время создания: Ноя 24 2025 г., 19:45
 -- Версия сервера: 8.0.30
 -- Версия PHP: 8.0.22
 
@@ -24,47 +24,47 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `products`
+-- Структура таблицы `user`
 --
 
-CREATE TABLE `products` (
-  `id` int UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `price` int UNSIGNED NOT NULL
-) ;
+CREATE TABLE `user` (
+  `id` int NOT NULL,
+  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `auth_key` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` enum('admin','user') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'user',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Дамп данных таблицы `products`
+-- Дамп данных таблицы `user`
 --
 
-INSERT INTO `products` (`id`, `title`, `description`, `price`) VALUES
-(1, 'Ручка', 'черная; гелевая; 0.5 мм', 50),
-(2, 'Ручка', 'синяя; шариковая; 0.7 мм', 40),
-(3, 'Блокнот', 'A5; клетка; 80 листов', 80),
-(4, 'Скобы', '№10; оцинкованные', 30),
-(5, 'Маркер', 'красный; перманентный', 70),
-(6, 'Папка', 'A4; пластик', 60);
+INSERT INTO `user` (`id`, `username`, `password_hash`, `auth_key`, `role`, `created_at`) VALUES
+(1, 'admin', '$2y$10$ffd3HqNPD8c.oLhJo4SUfuyL477U8LIv16bnkOqKzle.TkLb.IUsq', '1234567890abcdef1234567890abcdef', 'admin', '2025-11-16 13:15:45'),
+(3, 'user1', '$2y$10$ffd3HqNPD8c.oLhJo4SUfuyL477U8LIv16bnkOqKzleQ78WUBlYZa', 'key_user1_123456', 'user', '2025-11-24 16:43:19'),
+(4, 'user2', '$2y$10$ffd3HqNPD8c.oLhJo4SUfuyL477U8LIv16bnkOqKzleQ78WUBlYZa', 'key_user2_123456', 'user', '2025-11-24 16:43:19');
 
 --
 -- Индексы сохранённых таблиц
 --
 
 --
--- Индексы таблицы `products`
+-- Индексы таблицы `user`
 --
-ALTER TABLE `products`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
 --
 
 --
--- AUTO_INCREMENT для таблицы `products`
+-- AUTO_INCREMENT для таблицы `user`
 --
-ALTER TABLE `products`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `user`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

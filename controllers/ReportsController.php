@@ -95,7 +95,13 @@ class ReportsController extends Controller
 
   public function actionOrganizationsWithContracts()
     {
-        $minContracts = Yii::$app->request->get('SearchForm')['min_contracts'] ?? 2;
+        $model = new SearchForm();
+
+        if ($model->load(Yii::$app->request->get()) && $model->validate()) {
+            $minContracts = $model->min_contracts ?: 2;
+        } else {
+            $minContracts = 2;
+        }
 
         $query = Organization::find()
             ->alias('o')
